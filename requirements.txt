@@ -1,8 +1,3 @@
-fastapi
-uvicorn[standard]
-httpx
-pydantic
-pydantic-settings
-sqlalchemy[asyncio]
-asyncpg
-python-dotenv
+fastapi==0.150.0
+uvicorn==0.54.0
+python-dotenv==1.2.4
