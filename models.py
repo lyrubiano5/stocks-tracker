@@ -12,6 +12,7 @@ class Stock(Base):
     __tablename__ = "stocks"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), nullable=False)
     symbol: Mapped[str] = mapped_column(String(10), unique=True, nullable=False)
     reference_high: Mapped[Decimal] = mapped_column(Numeric(12, 3), nullable=False)
     last_price: Mapped[Decimal | None] = mapped_column(Numeric(12, 3), nullable=True)
