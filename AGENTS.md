@@ -41,3 +41,14 @@ Project is at TODO stage - no implementation yet. See TODO.md for planned tasks.
   or `docker compose exec app <command>` (e.g. pip, python, pytest, alembic).
 - Never guess package versions. Install inside the container and pin
   the versions actually installed in requirements.txt.
+
+## Code style
+
+- Follow PEP 8.
+- Order imports in three groups, separated by a blank line:
+  1. Standard library (e.g. os, asyncio)
+  2. Third-party packages (e.g. fastapi, sqlalchemy)
+  3. Local modules (e.g. models, database)
+- Sort imports alphabetically inside each group.
+- Never leave unused imports.
+- Use type hints in all function signatures.
