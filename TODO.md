@@ -22,7 +22,7 @@
 - [ ] 6. Create an endpoint that returns all the stocks with their
       current price, reference high, distance percentage, and
       whether they dropped 5% or more.
-- [ ] 7. Connect the frontend to the backend: the "Update prices"
+- [x] 7. Connect the frontend to the backend: the "Update prices"
       button updates the prices, the table loads from the new
       endpoint, and the "Show 5%+ drops" button uses the existing
       below-threshold endpoint.

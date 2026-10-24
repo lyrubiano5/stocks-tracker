@@ -88,8 +88,9 @@
     <table>
       <thead>
         <tr>
-          <th>Symbol</th>
-          <th>Current price</th>
+           <th>Symbol</th>
+          <th>Name</th>
+           <th>Current price</th>
           <th>Reference high</th>
           <th>Distance</th>
         </tr>
@@ -99,66 +100,90 @@
   </div>
 
   <script>
-    const stocks = [
-      { symbol: "NVDA", currentPrice: 214.13, referenceHigh: 230.00 },
-      { symbol: "AAPL", currentPrice: 184.52, referenceHigh: 198.23 },
-      { symbol: "MSFT", currentPrice: 421.38, referenceHigh: 430.82 },
-      { symbol: "AMZN", currentPrice: 185.07, referenceHigh: 180.00 },
-      { symbol: "TSLA", currentPrice: 172.64, referenceHigh: 207.30 }
-    ];
-
     let showDropsOnly = false;
+    let stocks = [];
 
-    function getDistance(stock) {
-      return ((stock.currentPrice - stock.referenceHigh) / stock.referenceHigh) * 100;
+    async function fetchStocks() {
+      const endpoint = showDropsOnly
+        ? "/api/stocks/below-threshold"
+        : "/api/stocks";
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      stocks = await response.json();
     }
 
     function formatPrice(price) {
-      return `$${price.toFixed(2)}`;
+      return price === null ? "-" : `$${Number(price).toFixed(2)}`;
+    }
+
+    function formatDistance(distance) {
+      return distance === null ? "-" : `${Number(distance).toFixed(1)}%`;
     }
 
     function renderTable() {
       const tableBody = document.getElementById("stocksTableBody");
-      const visibleStocks = showDropsOnly
-        ? stocks.filter((stock) => getDistance(stock) <= -5)
-        : stocks;
-
-      tableBody.innerHTML = visibleStocks.map((stock) => {
-        const distance = getDistance(stock);
-        const distanceClass = distance < 0 ? "drop" : "positive";
+      tableBody.innerHTML = stocks.map((stock) => {
+        const distance = stock.distance_pct === null
+          ? null
+          : Number(stock.distance_pct);
+        const distanceClass = distance !== null && distance < 0 ? "drop" : "positive";
         return `
           <tr>
             <td><strong>${stock.symbol}</strong></td>
-            <td>${formatPrice(stock.currentPrice)}</td>
-            <td>${formatPrice(stock.referenceHigh)}</td>
-            <td class="${distanceClass}">${distance.toFixed(1)}%</td>
+            <td>${stock.name}</td>
+            <td>${formatPrice(stock.current_price)}</td>
+            <td>${formatPrice(stock.reference_high)}</td>
+            <td class="${distanceClass}">${formatDistance(stock.distance_pct)}</td>
           </tr>
         `;
       }).join("");
 
-      if (visibleStocks.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="4">No stocks are down 5% or more.</td></tr>';
+      if (stocks.length === 0) {
+        const message = showDropsOnly
+          ? "No stocks are down 5% or more."
+          : "No stocks found.";
+        tableBody.innerHTML = `<tr><td colspan="5">${message}</td></tr>`;
       }
     }
 
-    document.getElementById("updatePricesBtn").addEventListener("click", () => {
-      stocks.forEach((stock) => {
-        const dailyChange = (Math.random() * 0.08) - 0.04;
-        stock.currentPrice = Math.max(0.01, stock.currentPrice * (1 + dailyChange));
-      });
-      renderTable();
-      document.getElementById("status").textContent = "Mock prices updated.";
+    async function loadStocks(statusMessage = "") {
+      try {
+        await fetchStocks();
+        renderTable();
+        document.getElementById("status").textContent = statusMessage;
+      } catch (error) {
+        document.getElementById("status").textContent = `Unable to load stocks: ${error.message}`;
+      }
+    }
+
+    document.getElementById("updatePricesBtn").addEventListener("click", async () => {
+      const button = document.getElementById("updatePricesBtn");
+      button.disabled = true;
+      document.getElementById("status").textContent = "Updating prices...";
+      try {
+        const response = await fetch("/api/check", { method: "POST" });
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+        await loadStocks("Prices updated.");
+      } catch (error) {
+        document.getElementById("status").textContent = `Unable to update prices: ${error.message}`;
+      } finally {
+        button.disabled = false;
+      }
     });
 
-    document.getElementById("filterBtn").addEventListener("click", (event) => {
+    document.getElementById("filterBtn").addEventListener("click", async (event) => {
       showDropsOnly = !showDropsOnly;
       event.currentTarget.textContent = showDropsOnly
         ? "Show all stocks"
         : "Show 5%+ drops";
-      renderTable();
+      await loadStocks();
     });
 
-    renderTable();
+    loadStocks();
   </script>
 </body>
 </html>
