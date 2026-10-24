@@ -7,7 +7,7 @@ from app.db.models import Stock
 STOCKS_DATA = [
     ("Microsoft", "546.000", "MSFT"),
     ("Cloudflare", "310.000", "NET"),
-    ("Novo Nordisk", "264.000", "NVO"),
+    ("Novo Nordisk", "39.560", "NVO"),
     ("Ulta Beauty", "624.000", "ULTA"),
     ("Booking", "162.000", "BKNG"),
     ("RTX", "192.000", "RTX"),

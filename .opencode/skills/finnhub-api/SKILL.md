@@ -37,4 +37,4 @@ description: How to fetch stock prices from the Finnhub API in this project. Use
   with `c`, `h`, `l`, `o`, `pc` and `t` set to 0, and `d` and `dp` set to null.
   If `c` is 0, treat the symbol as invalid or without data, and skip it.
 - When modeling the response with Pydantic, `d` and `dp` must be nullable.
-- If one stock fails, the others must still be returned. Never let one failure break the whole check.
+

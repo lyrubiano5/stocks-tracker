@@ -38,6 +38,7 @@ class FinnhubClient:
         async with self._semaphore:
             try:
                 response = await self._client.get("/quote", params={"symbol": symbol})
+                print(response)
                 response.raise_for_status()
                 data: Any = response.json()
             except (httpx.HTTPError, ValueError) as exc:
