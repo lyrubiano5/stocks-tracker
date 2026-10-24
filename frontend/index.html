@@ -5,19 +5,160 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stocks Tracker</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
-    button { padding: 0.75rem 1.5rem; font-size: 1rem; cursor: pointer; background-color: #3b82f6; color: white; border: none; border-radius: 4px; }
-    button:hover { background-color: #2563eb; }
-    #result { margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 4px; }
+    :root {
+      color: #172033;
+      background: #f4f7fb;
+      font-family: system-ui, sans-serif;
+    }
+
+    body {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    h1 { margin-bottom: 0.35rem; }
+    p { color: #5b6578; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+
+    button {
+      padding: 0.7rem 1.1rem;
+      border: 0;
+      border-radius: 6px;
+      color: white;
+      background: #2563eb;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    button:hover { background: #1d4ed8; }
+    button.secondary { color: #1d4ed8; background: #dbeafe; }
+    button.secondary:hover { background: #bfdbfe; }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid #dbe2ee;
+      border-radius: 8px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    th, td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid #e8edf5;
+      text-align: left;
+    }
+
+    th {
+      color: #5b6578;
+      background: #f8fafc;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    .drop { color: #dc2626; font-weight: 600; }
+    .positive { color: #15803d; font-weight: 600; }
+    #status { min-height: 1.5rem; margin: 0.75rem 0; }
   </style>
 </head>
 <body>
   <h1>Stocks Tracker</h1>
-  <button id="checkBtn">Check</button>
-  <div id="result">NVDA is 10% below its reference high</div>
+  <p>Track current prices against each stock's reference high.</p>
+
+  <div class="actions">
+    <button id="updatePricesBtn">Update prices</button>
+    <button id="filterBtn" class="secondary">Show 5%+ drops</button>
+  </div>
+
+  <p id="status" aria-live="polite"></p>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Current price</th>
+          <th>Reference high</th>
+          <th>Distance</th>
+        </tr>
+      </thead>
+      <tbody id="stocksTableBody"></tbody>
+    </table>
+  </div>
+
   <script>
-    document.getElementById('checkBtn').addEventListener('click', () => {
+    const stocks = [
+      { symbol: "NVDA", currentPrice: 214.13, referenceHigh: 230.00 },
+      { symbol: "AAPL", currentPrice: 184.52, referenceHigh: 198.23 },
+      { symbol: "MSFT", currentPrice: 421.38, referenceHigh: 430.82 },
+      { symbol: "AMZN", currentPrice: 185.07, referenceHigh: 180.00 },
+      { symbol: "TSLA", currentPrice: 172.64, referenceHigh: 207.30 }
+    ];
+
+    let showDropsOnly = false;
+
+    function getDistance(stock) {
+      return ((stock.currentPrice - stock.referenceHigh) / stock.referenceHigh) * 100;
+    }
+
+    function formatPrice(price) {
+      return `$${price.toFixed(2)}`;
+    }
+
+    function renderTable() {
+      const tableBody = document.getElementById("stocksTableBody");
+      const visibleStocks = showDropsOnly
+        ? stocks.filter((stock) => getDistance(stock) <= -5)
+        : stocks;
+
+      tableBody.innerHTML = visibleStocks.map((stock) => {
+        const distance = getDistance(stock);
+        const distanceClass = distance < 0 ? "drop" : "positive";
+        return `
+          <tr>
+            <td><strong>${stock.symbol}</strong></td>
+            <td>${formatPrice(stock.currentPrice)}</td>
+            <td>${formatPrice(stock.referenceHigh)}</td>
+            <td class="${distanceClass}">${distance.toFixed(1)}%</td>
+          </tr>
+        `;
+      }).join("");
+
+      if (visibleStocks.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4">No stocks are down 5% or more.</td></tr>';
+      }
+    }
+
+    document.getElementById("updatePricesBtn").addEventListener("click", () => {
+      stocks.forEach((stock) => {
+        const dailyChange = (Math.random() * 0.08) - 0.04;
+        stock.currentPrice = Math.max(0.01, stock.currentPrice * (1 + dailyChange));
+      });
+      renderTable();
+      document.getElementById("status").textContent = "Mock prices updated.";
     });
+
+    document.getElementById("filterBtn").addEventListener("click", (event) => {
+      showDropsOnly = !showDropsOnly;
+      event.currentTarget.textContent = showDropsOnly
+        ? "Show all stocks"
+        : "Show 5%+ drops";
+      renderTable();
+    });
+
+    renderTable();
   </script>
 </body>
 </html>

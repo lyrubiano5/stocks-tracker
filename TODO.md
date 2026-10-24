@@ -15,11 +15,13 @@
       distance, and returns only the ones that dropped 5% or more.
 - [ ] 5. Update the frontend to show a table with all the stocks:
       symbol, current price, reference high and distance. Use
-      hardcoded data for now. Add a button that filters the table
-      to show only the stocks that dropped 5% or more.
+      hardcoded data for now. Add two buttons: "Update prices",
+      to refresh the data to today (not functional yet), and
+      "Show 5%+ drops", to filter the table to show only the
+      stocks that dropped 5% or more.
 - [ ] 6. Create an endpoint that returns all the stocks with their
       current price, reference high and distance, with an optional
       filter for the ones that dropped 5% or more.
-- [ ] 7. Connect the frontend to the backend: the "Check" button
-      updates the prices, the table loads from the endpoint, and
-      the filter button uses the endpoint's filter.
+- [ ] 7. Connect the frontend to the backend: the "Update prices"
+      button updates the prices, the table loads from the endpoint,
+      and the "Show 5%+ drops" button uses the endpoint's filter.
