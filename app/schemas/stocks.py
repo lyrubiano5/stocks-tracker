@@ -20,6 +20,14 @@ class CheckResponse(BaseModel):
     skipped_symbols: list[str]
 
 
+class StockResponse(BaseModel):
+    symbol: str
+    name: str
+    current_price: Decimal | None
+    reference_high: Decimal
+    distance_pct: Decimal | None
+
+
 class BelowThresholdStockResponse(BaseModel):
     symbol: str
     name: str

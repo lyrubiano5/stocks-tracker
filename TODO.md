@@ -20,8 +20,9 @@
       "Show 5%+ drops", to filter the table to show only the
       stocks that dropped 5% or more.
 - [ ] 6. Create an endpoint that returns all the stocks with their
-      current price, reference high and distance, with an optional
-      filter for the ones that dropped 5% or more.
+      current price, reference high, distance percentage, and
+      whether they dropped 5% or more.
 - [ ] 7. Connect the frontend to the backend: the "Update prices"
-      button updates the prices, the table loads from the endpoint,
-      and the "Show 5%+ drops" button uses the endpoint's filter.
+      button updates the prices, the table loads from the new
+      endpoint, and the "Show 5%+ drops" button uses the existing
+      below-threshold endpoint.

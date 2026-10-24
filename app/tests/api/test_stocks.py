@@ -105,6 +105,51 @@ class TestCheckStocksEndpoint:
         assert stored.distance_pct is None
 
 
+class TestStocksEndpoint:
+    @pytest.mark.usefixtures("clean_database")
+    async def test_returns_all_stocks_with_persisted_values(
+        self, client, session_maker: async_sessionmaker[AsyncSession]
+    ) -> None:
+        test_client, set_finnhub_client = client
+        await add_stock(
+            session_maker,
+            symbol="MSFT",
+            name="Microsoft",
+            reference_high="100",
+            last_price="90",
+            distance_pct="-10",
+        )
+        await add_stock(
+            session_maker,
+            symbol="AAPL",
+            name="Apple",
+            reference_high="200",
+        )
+        fake = FakeFinnhubClient({}, error=FinnhubError("Finnhub must not be called"))
+        set_finnhub_client(fake)
+
+        response = await test_client.get("/api/stocks")
+
+        assert response.status_code == 200
+        assert response.json() == [
+            {
+                "symbol": "AAPL",
+                "name": "Apple",
+                "current_price": None,
+                "reference_high": "200.000",
+                "distance_pct": None,
+            },
+            {
+                "symbol": "MSFT",
+                "name": "Microsoft",
+                "current_price": "90.000",
+                "reference_high": "100.000",
+                "distance_pct": "-10.00",
+            },
+        ]
+        assert fake.calls == []
+
+
 class TestBelowThresholdEndpoint:
     @pytest.mark.usefixtures("clean_database")
     async def test_returns_persisted_values_without_calling_finnhub(

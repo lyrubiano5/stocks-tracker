@@ -7,6 +7,7 @@ from app.db.models import Stock
 from app.schemas.stocks import (
     BelowThresholdStockResponse,
     CheckResponse,
+    StockResponse,
 )
 from app.services.finnhub import FinnhubClient, FinnhubError
 from app.services.stock_checker import check_stocks as run_stock_check
@@ -27,6 +28,23 @@ async def check_stocks(
         return await run_stock_check(session, finnhub)
     except FinnhubError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@router.get("/stocks", response_model=list[StockResponse])
+async def get_stocks(
+    session: AsyncSession = Depends(get_session),
+) -> list[StockResponse]:
+    stocks = await session.scalars(select(Stock).order_by(Stock.symbol))
+    return [
+        StockResponse(
+            symbol=stock.symbol,
+            name=stock.name,
+            current_price=stock.last_price,
+            reference_high=stock.reference_high,
+            distance_pct=stock.distance_pct,
+        )
+        for stock in stocks
+    ]
 
 
 @router.get(
