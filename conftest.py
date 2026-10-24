@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from models import Base, Stock
+from app.db.models import Base, Stock
 
 
 TEST_DATABASE = "stocks_test"

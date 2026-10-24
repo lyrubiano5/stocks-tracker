@@ -1,8 +1,8 @@
 import asyncio
 from decimal import Decimal
 from sqlalchemy import select
-from database import async_session_maker
-from models import Stock
+from app.db.database import async_session_maker
+from app.db.models import Stock
 
 STOCKS_DATA = [
     ("Microsoft", "546.000", "MSFT"),

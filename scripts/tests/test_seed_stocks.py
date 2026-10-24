@@ -2,7 +2,7 @@ from collections.abc import Awaitable, Callable
 
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from models import Stock
+from app.db.models import Stock
 from scripts.seed_stocks import STOCKS_DATA, seed_stocks
 
 

@@ -14,4 +14,3 @@
       fetches their current price from Finnhub, calculates the
       distance, and returns only the ones that dropped 5% or more.
 - [ ] 5. Connect the frontend to the backend.
-- [ ] 6. Update the reference high when a stock goes above it.

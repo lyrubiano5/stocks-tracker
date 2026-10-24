@@ -2,7 +2,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from models import Stock
+from app.db.models import Stock
 
 
 @pytest.fixture

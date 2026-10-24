@@ -13,4 +13,4 @@ async def health_check():
 
 @app.get("/home")
 async def home():
-    return FileResponse("static/index.html")
+    return FileResponse("frontend/index.html")
