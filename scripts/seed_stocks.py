@@ -17,8 +17,8 @@ STOCKS_DATA = [
 ]
 
 
-async def seed_stocks() -> None:
-    async with async_session_maker() as session:
+async def seed_stocks(session_maker=async_session_maker) -> None:
+    async with session_maker() as session:
         symbols = [s.upper().replace(" ", "") for _, _, s in STOCKS_DATA]
         result = await session.execute(select(Stock).where(Stock.symbol.in_(symbols)))
         existing = {s.symbol: s for s in result.scalars().all()}
